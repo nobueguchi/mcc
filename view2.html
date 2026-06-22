@@ -21,7 +21,7 @@
       <img src="assets/patternA.svg" draggable="false" style="position:absolute;top:0;left:0;width:3360px;height:1634px;pointer-events:none;opacity:0.85;">
     </div>
 
-    <img ref="{{ lineF6 }}" src="assets/lineF6.svg" draggable="false" style="position:absolute;top:1444px;left:760px;width:1840px;height:13px;z-index:40;opacity:0;pointer-events:none;">
+    <img ref="{{ lineF6 }}" src="assets/lineF6.svg" draggable="false" style="position:absolute;top:1444px;left:760px;width:1840px;height:13px;z-index:40;opacity:0;pointer-events:none;transform-origin:0px 6px;transform:scaleX(0);">
     <img ref="{{ boxOpenF6 }}" src="assets/boxOpenF6.svg" draggable="false" style="position:absolute;top:1165px;left:1466px;width:407px;height:343px;z-index:41;opacity:0;pointer-events:none;transform-origin:324px 235px;">
     <img ref="{{ f6a }}" src="assets/f6a.svg" draggable="false" style="position:absolute;top:1134px;left:298px;width:93px;height:107px;z-index:41;opacity:0;pointer-events:none;transform-origin:132px 46px;">
     <img ref="{{ f6b }}" src="assets/f6b.svg" draggable="false" style="position:absolute;top:483px;left:847px;width:149px;height:149px;z-index:41;opacity:0;pointer-events:none;transform-origin:73px 37px;">
@@ -66,19 +66,22 @@ class Component extends DCLogic {
     const P=(a,b)=>this.p(t,a,b);
     const END=this.dur();
 
-    // (4) gradient sweeps in (originally 8700 to 9550)
-    const wipe = eInOut(P(0,850));
+    // (4) gradient sweeps in
+    const wipe = eInOut(P(0,700));
     this.set('gradient','clipPath', `inset(0% ${lerp(wipe,100,0)}% 0% 0%)`);
-    this.set('patternG','opacity', String(P(0,850)*0.9));
+    this.set('patternG','opacity', String(P(0,700)*0.9));
 
-    // white circle opens to reveal frame 6 (originally 9600 to 11100)
-    const cr = eInOut(P(900,2400));
+    // (A) white circle opens to reveal frame 6
+    const cr = eInOut(P(700,1700));
     this.set('circleGroup','clipPath', `circle(${lerp(cr,0,1049)}px at 1680px 918px)`);
 
-    // frame 6 bottom line + box settle in (originally 9800 to 10500, and 9850 to 10550 / 10650)
-    this.set('lineF6','opacity', String(P(1100,1800)));
-    this.set('boxOpenF6','opacity', String(P(1150,1850)));
-    this.set('boxOpenF6','transform', `scale(${lerp(eBack(P(1150,1950)),0.85,1)})`);
+    // (B) bottom line draws across from the left (starts as circle finishes)
+    this.set('lineF6','opacity', String(P(1600,1800)));
+    this.set('lineF6','transform', `scaleX(${eOut(P(1600,2200))})`);
+
+    // (C) center box pops in (starts as the line finishes)
+    this.set('boxOpenF6','opacity', String(P(2150,2600)));
+    this.set('boxOpenF6','transform', `scale(${lerp(eBack(P(2150,2700)),0.85,1)})`);
 
     // peripheral parts emerge from the box
     const OX=1790, OY=1400;
@@ -91,17 +94,17 @@ class Component extends DCLogic {
       this.set(ref,'opacity', String(P(start, start+300)));
       this.set(ref,'transform', `translate(${tx}px, ${ty}px) rotate(${rot}deg) scale(${lerp(eOut(P(start,start+900)),0.1,1)})`);
     };
-    fly('f6a', 430,1180, 1200);  // originally 9900
-    fly('f6b', 920, 520, 1250);  // originally 9950
-    fly('f6c',2300, 470, 1350);  // originally 10050
-    fly('f6d',2920, 700, 1300);  // originally 10000
-    fly('f6e',3070,1190, 1450);  // originally 10150
-    fly('f6f',2470, 915, 1380);  // originally 10080
-    fly('f6L',1095,1270, 1500);  // originally 10200
+    fly('f6a', 430,1180, 2550);
+    fly('f6b', 920, 520, 2600);
+    fly('f6c',2300, 470, 2750);
+    fly('f6d',2920, 700, 2650);
+    fly('f6e',3070,1190, 2850);
+    fly('f6f',2470, 915, 2700);
+    fly('f6L',1095,1270, 2900);
 
-    // text frame 6 (originally 10350 to 11100 / 11200)
-    this.set('textF6','opacity', String(P(1650,2400)));
-    this.set('textF6','transform', `translateY(${lerp(eOut(P(1650,2500)),34,0)}px)`);
+    // text frame 6
+    this.set('textF6','opacity', String(P(3050,3700)));
+    this.set('textF6','transform', `translateY(${lerp(eOut(P(3050,3800)),34,0)}px)`);
   }
 
   rescale = () => {
